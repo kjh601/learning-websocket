@@ -17,6 +17,7 @@ public class RoomController {
 
     private final RoomService roomService;
     private final RoomConverter roomConverter;
+    private final UserRoomConverter userRoomConverter;
 
     @PostMapping("/")
     public RoomDto.roomRes create(@RequestBody RoomDto.createReq request) {
@@ -27,5 +28,16 @@ public class RoomController {
     @DeleteMapping("/")
     public void remove(@RequestBody RoomDto.removeReq request) {
         roomService.removeRoom(request);
+    }
+
+    @PostMapping("/join")
+    public UserRoomDto.userRes joinRoom(@RequestBody UserRoomDto.joinReq request) {
+        UserRoom userRoom = roomService.joinRoom(request);
+        return userRoomConverter.toUserRoomDto(userRoom);
+    }
+
+    @DeleteMapping("/leave")
+    public void leaveRoom(@RequestBody UserRoomDto.leaveReq request) {
+        roomService.leaveRoom(request);
     }
 }
