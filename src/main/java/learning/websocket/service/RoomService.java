@@ -3,18 +3,20 @@ package learning.websocket.service;
 import jakarta.transaction.Transactional;
 import learning.websocket.converter.RoomConverter;
 import learning.websocket.converter.UserRoomConverter;
+import learning.websocket.dto.MessageLogDto;
 import learning.websocket.dto.RoomDto;
 import learning.websocket.dto.UserRoomDto;
 import learning.websocket.entity.Room;
 import learning.websocket.entity.User;
 import learning.websocket.entity.UserRoom;
+import learning.websocket.repository.MessageRepository;
 import learning.websocket.repository.RoomRepository;
 import learning.websocket.repository.UserRepository;
 import learning.websocket.repository.UserRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,8 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomConverter roomConverter;
+
+    private final MessageRepository messageRepository;
 
     public Room createRoom(RoomDto.createReq request) {
         Room room = roomConverter.toRoom(request);
@@ -53,5 +57,9 @@ public class RoomService {
         Room room = roomRepository.findById(request.getRoomId()).get();
         UserRoom userRoom = userRoomRepository.findByUserAndRoom(user, room);
         userRoomRepository.delete(userRoom);
+    }
+
+    public List<MessageLogDto> getChatRoomMessages(Long roomId) {
+        return messageRepository.findMessageLogs(roomId);
     }
 }

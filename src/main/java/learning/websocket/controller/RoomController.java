@@ -2,6 +2,7 @@ package learning.websocket.controller;
 
 import learning.websocket.converter.RoomConverter;
 import learning.websocket.converter.UserRoomConverter;
+import learning.websocket.dto.MessageLogDto;
 import learning.websocket.dto.RoomDto;
 import learning.websocket.dto.UserRoomDto;
 import learning.websocket.entity.Room;
@@ -9,6 +10,8 @@ import learning.websocket.entity.UserRoom;
 import learning.websocket.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +42,10 @@ public class RoomController {
     @DeleteMapping("/leave")
     public void leaveRoom(@RequestBody UserRoomDto.leaveReq request) {
         roomService.leaveRoom(request);
+    }
+
+    @GetMapping("/{roomId}/messages")
+    public List<MessageLogDto> getAllRoomMessages(@PathVariable Long roomId) {
+        return roomService.getChatRoomMessages(roomId);
     }
 }
