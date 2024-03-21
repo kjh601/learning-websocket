@@ -63,9 +63,9 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
         removeClosedSession(chatRoomSession);
 
-        messageService.save(messageDto);
-
         sendMessageToChatRoom(messageDto, chatRoomSession);
+
+        messageService.save(messageDto);
     }
 
     @Override
