@@ -43,8 +43,8 @@ public class RoomService {
 
     @Transactional
     public UserRoom joinRoom(UserRoomDto.joinReq request) {
-        User user = userRepository.findById(request.getUserId()).get();
-        Room room = roomRepository.findById(request.getRoomId()).get();
+        User user = userRepository.findById(request.getUserId()).orElseThrow();
+        Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
 
         UserRoom userRoom = userRoomConverter.toUserRoom(user, room, request.getUserRole());
 
@@ -53,9 +53,9 @@ public class RoomService {
 
     @Transactional
     public void leaveRoom(UserRoomDto.leaveReq request) {
-        User user = userRepository.findById(request.getUserId()).get();
-        Room room = roomRepository.findById(request.getRoomId()).get();
-        UserRoom userRoom = userRoomRepository.findByUserAndRoom(user, room);
+        User user = userRepository.findById(request.getUserId()).orElseThrow();
+        Room room = roomRepository.findById(request.getRoomId()).orElseThrow();
+        UserRoom userRoom = userRoomRepository.findByUserAndRoom(user, room).orElseThrow();
         userRoomRepository.delete(userRoom);
     }
 
