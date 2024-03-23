@@ -21,11 +21,11 @@ public class MessageService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
 
-    public void save(MessageDto messageDto) {
+    public void save(MessageDto messageDto, Long roomId) {
 
-        User user = userRepository.findById(messageDto.getSenderId()).get();
-        Room room = roomRepository.findById(messageDto.getChatRoomId()).get();
-        UserRoom userRoom = userRoomRepository.findByUserAndRoom(user, room);
+        User user = userRepository.findById(messageDto.getSenderId()).orElseThrow();
+        Room room = roomRepository.findById(roomId).orElseThrow();
+        UserRoom userRoom = userRoomRepository.findByUserAndRoom(user, room).orElseThrow();
 
         Message message = Message.builder()
                 .userRoom(userRoom)
