@@ -2,7 +2,6 @@ package learning.websocket.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import learning.websocket.dto.MessageDto;
-import learning.websocket.enums.MessageType;
 import learning.websocket.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +22,23 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
 
-    private final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
-
     private final Map<Long, Set<WebSocketSession>> chatRoomSessionMap = new ConcurrentHashMap<>();
 
     private final MessageService messageService;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // TODO Auto-generated method stub
+
+        Long roomId = Long.valueOf((String) session.getAttributes().get("roomId"));
+
+        if (!chatRoomSessionMap.containsKey(roomId)) {
+            chatRoomSessionMap.put(roomId, ConcurrentHashMap.newKeySet());
+        }
+
+        Set<WebSocketSession> chatRoom = chatRoomSessionMap.get(roomId);
+
+        chatRoom.add(session);
         log.info("{} 연결됨", session.getId());
-        sessions.add(session);
     }
 
     // 소켓 통신 시 메세지의 전송을 다루는 부분
@@ -46,37 +51,23 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         MessageDto messageDto = mapper.readValue(payload, MessageDto.class);
         log.info("session {}", messageDto.toString());
 
-        Long chatRoomId = messageDto.getChatRoomId();
+        Long roomId = Long.valueOf((String) session.getAttributes().get("roomId"));
 
-        // 메모리 상에 채팅방에 대한 세션 없으면 만들어줌
-        if (!chatRoomSessionMap.containsKey(chatRoomId)) {
-            chatRoomSessionMap.put(chatRoomId, ConcurrentHashMap.newKeySet());
-        }
-
-        // 채팅방 Id로 채팅방 찾아서 chatRoomSession 에 할당
-        Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
-
-        // 메시지가 ENTER 타입인 경우, chatRoomSession 채팅방에 추가하라
-        if (messageDto.getMessageType().equals(MessageType.ENTER)) {
-            chatRoomSession.add(session);
-        }
-
-        removeClosedSession(chatRoomSession);
+        Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(roomId);
 
         sendMessageToChatRoom(messageDto, chatRoomSession);
 
-        messageService.save(messageDto);
+        messageService.save(messageDto, roomId);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        log.info("{} 연결 끊김", session.getId());
-        sessions.remove(session);
-    }
 
-    // 채팅방에 있는 세션 중에서 현재 연결된 세션 집합에 없는 세션은 삭제하라
-    private void removeClosedSession(Set<WebSocketSession> chatRoomSession) {
-        chatRoomSession.removeIf(session -> !sessions.contains(session));
+        Long roomId = Long.valueOf((String) session.getAttributes().get("roomId"));
+        Set<WebSocketSession> chatRoom = chatRoomSessionMap.get(roomId);
+
+        chatRoom.remove(session);
+        log.info("{} 연결 끊김", session.getId());
     }
 
     // chatRoom 에 있는 모든 session 에 메시지를 전송하라
