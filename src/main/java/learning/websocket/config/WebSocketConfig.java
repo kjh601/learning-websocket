@@ -2,25 +2,24 @@ package learning.websocket.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
-@EnableWebSocket
+@EnableWebSocketMessageBroker
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-    private final WebSocketHandler webSocketHandler;
-    private final HandshakeInterceptor handshakeInterceptor;
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("*");
+    }
 
     @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
 
-        registry.addHandler(webSocketHandler, "/chat/rooms/*")
-                .addInterceptors(handshakeInterceptor)
-                .setAllowedOrigins("*");
+        registry.enableSimpleBroker("/sub");
+        registry.setApplicationDestinationPrefixes("/pub");
     }
 }
