@@ -2,6 +2,7 @@ package learning.websocket.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,17 @@ public class Room {
     @Column(nullable = false, length = 40)
     private String roomName;
 
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    @Builder.Default()
+    private Integer currentMembers = 0;
+
+    @Column(nullable = false)
+    private Integer maxMembers;
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<UserRoom> userRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Message> messages = new ArrayList<>();
 }
