@@ -21,7 +21,9 @@ public class UserRoomConverter {
     public UserRoomDto.userRes toUserRoomDto(UserRoom userRoom) {
         return UserRoomDto.userRes.builder()
                 .userId(userRoom.getUser().getId())
+                .userName(userRoom.getUser().getName())
                 .roomId(userRoom.getRoom().getId())
+                .roomName(userRoom.getRoom().getRoomName())
                 .userRole(userRoom.getUserRole())
                 .build();
     }
