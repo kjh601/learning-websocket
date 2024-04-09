@@ -23,8 +23,7 @@ public class Room {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    @Builder.Default()
-    private Integer currentMembers = 0;
+    private Integer currentMembers;
 
     @Column(nullable = false)
     private Integer maxMembers;
