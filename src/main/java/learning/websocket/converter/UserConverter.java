@@ -12,7 +12,7 @@ public class UserConverter {
                 .build();
     }
 
-    public UserDto.userRes toUserDto(User user) {
+    public UserDto.userRes toUserRes(User user) {
         return UserDto.userRes.builder()
                 .id(user.getId())
                 .name(user.getName())
