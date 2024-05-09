@@ -3,6 +3,7 @@ package learning.websocket.controller;
 import learning.websocket.config.PrincipalDetails;
 import learning.websocket.dto.*;
 import learning.websocket.entity.User;
+import learning.websocket.enums.MessageType;
 import learning.websocket.service.MessageService;
 import learning.websocket.service.RoomService;
 import learning.websocket.service.UserRoomService;
@@ -97,6 +98,7 @@ public class RoomController {
 
         Long userId = principalDetails.getUser().getId();
         if(!userRoomService.checkEnter(userId, roomId)) {
+            messageService.sendMessage(userId, roomId, MessageType.ENTER);
             roomService.joinRoom(userId, roomId);
         }
 
@@ -122,6 +124,7 @@ public class RoomController {
 
         Long userId = principalDetails.getUser().getId();
 
+        messageService.sendMessage(userId, roomId, MessageType.LEAVE);
         roomService.leaveRoom(userId, roomId);
 
         return "redirect:/rooms";
