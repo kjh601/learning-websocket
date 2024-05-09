@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 560px;
+        }
+    </style>
+    <title></title>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="py-5 text-center">
+        <h2>채팅방 상세</h2>
+    </div>
+
+    <th:block th:if="${isAdmin == true}">
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-danger float-end"
+                        th:onclick="|location.href='@{/rooms/{roomId}/delete(roomId=${room.id})}'|"
+                        type="button" >채팅방 삭제</button>
+            </div>
+        </div>
+    </th:block>
+    
+    <h2 th:if="${param.status}" th:text="'저장 완료'"></h2>
+
+    <div>
+        <label for="roomId">채팅방 ID</label>
+        <input type="text" id="roomId" name="roomId" class="form-control" value="1" th:value="${room.id}" readonly>
+    </div>
+    <div>
+        <label for="roomName">채팅방명</label>
+        <input type="text" id="roomName" name="roomName" class="form-control" value="상품A" th:value="${room.name}" readonly>
+    </div>
+    <div>
+        <label for="currentMembers">현재 인원수</label>
+        <input type="text" id="currentMembers" name="currentMembers" class="form-control" value="0" th:value="${room.currentMembers}" readonly>
+    </div>
+    <div>
+        <label for="maxMembers">최대 인원수</label>
+        <input type="text" id="maxMembers" name="maxMembers" class="form-control" value="100" th:value="${room.maxMembers}" readonly>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+        <th:block th:if="${isAdmin == true}">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg"
+                        th:onclick="|location.href='@{/rooms/{roomId}/edit(roomId=${room.id})}'|"
+                        type="button">채팅방 수정</button>
+            </div>
+        </th:block>
+        <th:block th:unless="${isAdmin == true}">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg"
+                        th:onclick="|location.href='@{/rooms/{roomId}/chat(roomId=${room.id})}'|"
+                        th:text="${room.isParticipating ? '채팅방 참여중' : '채팅방 참가'}"
+                        type="button">채팅방 참가</button>
+            </div>
+        </th:block>
+        <div class="col">
+            <button class="w-100 btn btn-secondary btn-lg"
+                    onclick="location.href='rooms.html'"
+                    th:onclick="|location.href='@{/rooms}'|"
+                    type="button">목록으로</button>
+        </div>
+    </div>
+
+</div> <!-- /container -->
+</body>
+</html>

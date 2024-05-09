@@ -31,5 +31,10 @@ public class Message {
     private LocalDateTime createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private UserRoom userRoom;
+    @JoinColumn(name = "sender_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
 }

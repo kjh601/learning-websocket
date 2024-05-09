@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/chat.css}"
+          href="../css/chat.css" rel="stylesheet">
+
+    <script th:src="@{/scripts/stomp.js}"
+            src="../static/scripts/stomp.js"></script>
+    <script th:src="@{/scripts/chat.js}"
+            src="../static/scripts/chat.js"></script>
+
+</head>
+<body th:onload="|connect(${room.id})|"
+      th:attr="data-user-id=${user.id}, data-user-name=${user.name}">
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>채팅방</h2>
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <div class="card chat-app">
+                <div id="plist" class="people-list">
+                    <div class="col">
+                        <button class="btn btn-primary"
+                                onclick="location.href='rooms.html'; disconnect()"
+                                th:onclick="|disconnect(); location.href='@{/rooms}'|"
+                                type="button" >뒤로가기</button>
+                        <button th:if="${admin.id != user.id}" class="btn btn-danger float-end"
+                                th:onclick="|location.href='@{/rooms/{roomId}/leave(roomId=${room.id})}'|"
+                                type="button" >나가기</button>
+                    </div>
+                    <ul class="list-unstyled chat-list mt-2 mb-0">
+                        <li class="clearfix" th:each="participant:${participants}">
+                            <div class="about">
+                                <div class="user-role" th:text="${participant.userRole}">참가자 역할</div>
+                                <div class="name" th:text="${participant.userName}">참가자 이름</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="chat">
+                    <div class="chat-header clearfix">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="chat-about" th:text="${room.name}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-history">
+                        <ul class="m-b-0">
+                            <li class="clearfix" th:each="message : ${messages}">
+                                <th:block th:if="${message.messageType == 'TALK'}">
+                                    <th:block th:if="${message.isMine}">
+                                        <div class="message-data text-right" th:text="${message.senderName}">나</div>
+                                        <div class="message my-message float-right" th:text="${message.message}"></div>
+                                    </th:block>
+                                    <th:block th:unless="${message.isMine}">
+                                        <div class="message-data" th:text="${message.senderName}">다른사람</div>
+                                        <div class="message other-message" th:text="${message.message}"></div>
+                                    </th:block>
+                                </th:block>
+                                <th:block th:if="${message.messageType == 'ENTER'}">
+                                    <div class="message alarm-message text-center" th:text="${message.senderName} + '씨가 입장하였습니다'"></div>
+                                </th:block>
+                                <th:block th:if="${message.messageType == 'LEAVE'}">
+                                    <div class="message alarm-message text-center" th:text="${message.senderName} + '씨가 퇴장하였습니다'"></div>
+                                </th:block>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="chat-message clearfix">
+                        <div class="input-group mb-0">
+                            <button type="button" class="input-group-prepend btn btn-primary"
+                                    th:onclick="|sendMessage(${room.id}, ${user.id})|"
+                                    th:onkeydown="|submitEnter(${room.id}, ${user.id})|">
+                                <i class="fa fa-send"></i>
+                            </button>
+                            <input type="text" id="messageContent" class="form-control" placeholder="Enter text here..."
+                                   th:onkeydown="|submitEnter(event, ${room.id}, ${user.id})|">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

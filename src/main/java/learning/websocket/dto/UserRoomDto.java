@@ -25,7 +25,9 @@ public class UserRoomDto {
     @Builder
     public static class userRes{
         private Long userId;
+        private String userName;
         private Long roomId;
+        private String roomName;
         private UserRole userRole;
     }
 }
